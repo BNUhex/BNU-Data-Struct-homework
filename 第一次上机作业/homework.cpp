@@ -1,9 +1,9 @@
 #include<iostream>
 
-#include <fstream>
+// #include <fstream>
 #include <string>
-std::string input =R"("")";
-std::string output=R"("")";
+// std::string input =R"("")";
+// std::string output=R"("")";
 struct node{
     int data;
     node *next;
@@ -15,25 +15,43 @@ struct node{
 };
 
 void creat_table(head first){
-    std::ifstream inputFile(input);
-    if(!inputFile.is_open()){
-        std::cout<<"Error opening file"<<std::endl;
-        exit(1);
-    }
+    first.next=NULL;
+    first.num=0;
     int num;
-    node *flag;
-    first.next=new node;
-    flag=first.next;
+    node* go=first.next;
 
-
-    while(inputFile>>num){
+    while(std::cin>>num){
+        go->data=num;
+        go=go->next;
         first.num++;
-
-        flag->data=num;
-        flag->next=new node;
-        flag=flag->next;
     }
-    delete flag;
+    go->next=NULL;
+    // std::ifstream inputFile(input);
+    // if(!inputFile.is_open()){
+    //     std::cout<<"Error opening file"<<std::endl;
+    //     exit(1);
+    // }
+//     int num;
+//     node *flag;
+//     first.next=new node;
+//     flag=first.next;    node* go=first.next;
+//     while(go->next!=NULL){
+//         go=go->next;
+//     }
+//     go->next=second.next;
+//     first.num+=second.num;
+//     delete second.next;
+// }
+
+
+//     while(inputFile>>num){
+//         first.num++;
+
+//         flag->data=num;
+//         flag->next=new node;
+//         flag=flag->next;
+//     }
+//     delete flag;
 }
 
 node* delmin(head first){
@@ -54,7 +72,7 @@ node* delmin(head first){
    if(prestay==stay){//由于头结点和其他节点的数据类型不同，要单独对第一个进行处理
        first.next=stay->next;
        first.num--;
-       return stay
+       return stay;
 
    }
     prestay=stay->next;
@@ -136,7 +154,7 @@ void delst(head &first,int s,int t){
         std::cout<<"Error: s>=t or empty list"<<std::endl;
         return;
     }
-    go=first.next;
+    node* go=first.next;
     for(int i=1;i<=first.num;i++){
         if(go->data>s&&go->data<t){
             node* temp=go;
@@ -147,4 +165,72 @@ void delst(head &first,int s,int t){
             go=go->next;
         }    
     }
+}
+void dels2t(head &first,int s,int t){
+    delst(first,s,t);
+}
+head mergelist(head &first,head second){
+    node* gofirst;
+    node* gosecond;
+    head combine;
+    node* gocombine;
+    combine.next=new node;
+    while(gofirst->next!=NULL&&gosecond->next!=NULL){
+        if(gofirst->data<gosecond->data){
+            gocombine->next=gofirst;
+            gocombine=gocombine->next;
+            gofirst=gofirst->next;
+        }
+        else{
+            gocombine->next=gosecond;
+            gocombine=gocombine->next;
+            gosecond=gosecond->next;
+        }
+    }
+    combine.num=first.num+second.num;
+    node* delnode=combine.next;
+    combine.next=gocombine->next->next;//头节点和普通节点不一致特有的处理
+    delete delnode;
+    return combine;
+}
+void delsame(head &first){
+    if(first.next==NULL){
+        std::cout<<"Error: empty list"<<std::endl;
+        return;
+    }
+    node* prego=first.next;
+    node* go=prego->next;
+    while(go!=NULL){
+        if(go->data==prego->data){
+            prego->next=go->next;
+            delete go;
+            go=prego->next;
+            first.num--;
+        }
+        else{
+            prego=go;
+            go=go->next;
+        }
+    }
+}
+void printlist(head first){
+    node* go=first.next;
+    while(go!=NULL){
+        std::cout<<go->data<<" ";
+        go=go->next;
+    }
+    std::cout<<std::endl;
+}
+
+
+int main(){
+    head first;
+    head second;
+    creat_table(first);
+    creat_table(second);
+    printlist(first);
+    printlist(second);
+    head combine=mergelist(first,second);
+    printlist(combine);
+    return 0;
 }
