@@ -14,17 +14,26 @@ struct node{
     node *next;
 };
 
-void creat_table(head first){
+void creat_table(head &first){
     first.next=NULL;
     first.num=0;
     int num;
+    first.next=new node;
+    if(first.next==NULL){
+        std::cout<<"Error: memory is full"<<std::endl;
+        exit(1);
+    }
     node* go=first.next;
-
+    std::cout<<"Please input the data of the table"<<std::endl;
     while(std::cin>>num){
+
         go->data=num;
+        if(std::cin.get()=='\n')break;
+        go->next=new node;
         go=go->next;
         first.num++;
     }
+
     go->next=NULL;
     // std::ifstream inputFile(input);
     // if(!inputFile.is_open()){
@@ -54,7 +63,7 @@ void creat_table(head first){
 //     delete flag;
 }
 
-node* delmin(head first){
+node* delmin(head &first){
     if (first.next==NULL){
         std::cout<<"Error: empty table"<<std::endl;
         return NULL;
@@ -80,7 +89,7 @@ node* delmin(head first){
     return stay;
 
 }
-node* deli(head first,int i){
+node* deli(head &first,int i){
     if(i>first.num||i<1){
         std::cout<<"Error: i is invalid"<<std::endl;
         return NULL;
@@ -103,7 +112,7 @@ node* deli(head first,int i){
     return go;
 
 }
-node* inserti(head first,int i,int data){
+node* inserti(head &first,int i,int data){
     if(i>first.num||i<1){
         std::cout<<"Error: i is invalid"<<std::endl;
         return NULL;
@@ -126,7 +135,7 @@ node* inserti(head first,int i,int data){
     first.num++;
     return temp;
 }
-void delx(head first,int x){
+void delx(head &first,int x){
     if (first.next->data==x){
         node* temp=first.next;
         first.next=first.next->next;
@@ -169,30 +178,36 @@ void delst(head &first,int s,int t){
 void dels2t(head &first,int s,int t){
     delst(first,s,t);
 }
-head mergelist(head &first,head second){
-    node* gofirst;
-    node* gosecond;
-    head combine;
+void mergelist(head first, head second, head &combine) {
+    node* gofirst = first.next;
+    node* gosecond = second.next;
     node* gocombine;
-    combine.next=new node;
-    while(gofirst->next!=NULL&&gosecond->next!=NULL){
-        if(gofirst->data<gosecond->data){
-            gocombine->next=gofirst;
-            gocombine=gocombine->next;
-            gofirst=gofirst->next;
+    combine.next = new node;
+    gocombine = combine.next;
+
+    while (gofirst != NULL || gosecond != NULL) {
+        gocombine->next = new node;
+
+        if (gofirst != NULL && (gosecond == NULL || gofirst->data <= gosecond->data)) {
+            gocombine->next->data = gofirst->data;
+            gofirst = gofirst->next;
         }
-        else{
-            gocombine->next=gosecond;
-            gocombine=gocombine->next;
-            gosecond=gosecond->next;
+        else {
+            gocombine->next->data = gosecond->data;
+            gosecond = gosecond->next;
         }
+
+        gocombine = gocombine->next;
     }
-    combine.num=first.num+second.num;
-    node* delnode=combine.next;
-    combine.next=gocombine->next->next;//头节点和普通节点不一致特有的处理
+
+    combine.num = first.num + second.num;
+    node* delnode = combine.next;
+    combine.next = combine.next->next;
     delete delnode;
-    return combine;
+
+    if (combine.next == NULL) std::cout << "Error: empty list" << std::endl;
 }
+
 void delsame(head &first){
     if(first.next==NULL){
         std::cout<<"Error: empty list"<<std::endl;
@@ -215,6 +230,10 @@ void delsame(head &first){
 }
 void printlist(head first){
     node* go=first.next;
+    if(go==NULL){
+        std::cout<<"Error: empty list"<<std::endl;
+        return;
+    }
     while(go!=NULL){
         std::cout<<go->data<<" ";
         go=go->next;
@@ -224,13 +243,20 @@ void printlist(head first){
 
 
 int main(){
-    head first;
+    head first={0,0,NULL};
+
     head second;
     creat_table(first);
+
     creat_table(second);
     printlist(first);
     printlist(second);
-    head combine=mergelist(first,second);
+    head combine;
+    mergelist(first,second,combine);
+    printlist(combine);
+    delx(combine,2);
+    printlist(combine);
+    delmin(combine);
     printlist(combine);
     return 0;
 }

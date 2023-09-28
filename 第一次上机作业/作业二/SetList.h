@@ -16,15 +16,18 @@ SetList* initSetList()
 void insertbuild(SetList* first)
 {
     int n;
+    first->next=new SetList;
     SetList* temp=first->next;
     std::cout<<"Input the set"<<std::endl;
     while (std::cin>>n)
     {
+
         temp->data=n;
+        if(std::cin.get()=='\n')break;
         temp->next=new SetList;
         temp=temp->next;
     }
-    temp=NULL;
+    temp->next=NULL;
     
 }
 int isInside(SetList* first,int x)
@@ -56,6 +59,7 @@ void insert(SetList* first,int x)
         go=go->next;
     }
     go->next=temp;
+
 }
 void del(SetList* first,int x)
 {
@@ -82,7 +86,7 @@ void delsame(SetList* first)
     SetList* go=first->next;
     while(go!=NULL)
     {
-        if(isInside(go->next,go->data))
+        if(isInside(go,go->data))
         {
             del(go,go->data);
         }
@@ -107,6 +111,7 @@ SetList* Union(SetList* A,SetList* B)
         insert(C,go->data);
         go=go->next;
     }
+    go=NULL;
     return C;
 }
 SetList* Intersection(SetList* A,SetList* B)
@@ -121,6 +126,7 @@ SetList* Intersection(SetList* A,SetList* B)
         }
         go=go->next;
     }
+    go=NULL;
     return C;
 }
 SetList* Difference(SetList* A,SetList* B)
@@ -135,6 +141,7 @@ SetList* Difference(SetList* A,SetList* B)
         }
         go=go->next;
     }
+    go=NULL;
     return C;
 }
 void printset(SetList* first)
